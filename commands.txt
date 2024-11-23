@@ -1,0 +1,18 @@
+# List Storage Accounts
+az storage account list --output table
+
+# List Containers in a Storage Account
+az storage container list --account-name <your-storage-account-name> --output table
+az storage container list --account-name amldatalakestore --output table
+
+# List files with the Container in the Storage Account
+az storage blob list --account-name <your-storage-account-name> --container-name <container-name> --output table
+az storage blob list --account-name amldatalakestore --container-name default-prediction-data --output table
+
+
+# Terraform commands
+terraform init
+terraform plan -out=tfplan
+terraform show tfplan
+terraform validate
+terraform apply tfplan
