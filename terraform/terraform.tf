@@ -132,10 +132,17 @@ resource "azurerm_data_factory" "adf" {
   public_network_enabled = true
 }
 
-# Linking Azure Data Lake Storage Account as Linked Service in Data Factory
+# Linking Azure Data Lake Storage Gen2 Account as Linked Service in Data Factory
 resource "azurerm_data_factory_linked_service_azure_blob_storage" "adf_linked_adls" {
-  name                = "adls-link"
-  data_factory_id     = azurerm_data_factory.adf.id
+  name            = "adls-gen2-link"  # Updated name for clarity
+  data_factory_id = azurerm_data_factory.adf.id
 
-  connection_string   = data.azurerm_storage_account.aml_storage_account.primary_connection_string
+  # Account key authentication (Replace with your storage account's actual name and key)
+  connection_string = data.azurerm_storage_account.aml_storage_account.primary_connection_string
+
+  # Alternatively, use Managed Identity authentication if desired:
+  use_managed_identity = true
+
+  # Optional description
+  description = "Linked Service to connect Azure Data Lake Gen2 to Azure Data Factory."
 }
