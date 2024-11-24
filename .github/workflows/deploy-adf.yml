@@ -1,46 +1,39 @@
-name: Deploy Azure Data Factory
+# Author: ishiipl@schaeffler.com
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # This will trigger on any push to the main branch
+      - main  # Trigger on push to main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull request to main branch
 
 jobs:
-  deploy:
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Step 2: Set up Azure CLI
-      - name: Set up Azure CLI
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13.0'  
 
-      # Step 3: Set the Azure Subscription
-      - name: Set Azure Subscription
-        run: |
-          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      # Step 4: Deploy or Update Azure Data Factory
-      - name: Deploy Data Factory Linked Service, Pipelines, etc.
-        run: |
-          # Configure Git integration in Azure Data Factory
-          az datafactory configure-repo \
-            --resource-group aml-resources \
-            --factory-name americanexpress-adf \
-            --repository-type GitHub \
-            --account-name palishiita \
-            --repository-name American-Express-Default-Prediction \
-            --collaboration-branch main \
-            --root-folder /ADF \
-            --git-url https://github.com/palishiita/American-Express-Default-Prediction \
-            --last-commit-id c2986cf49e7f0ae92022f5db342d159bb7f12896
+    - name: Lint code
+      run: |
+        pip install flake8
+        flake8 .  
 
-          # Deploy Data Factory resources like pipelines, datasets, and linked services
-          for file in $(find . -type f -name "*.json" -path "./ADF/*"); do
-            az datafactory pipeline create --resource-group aml-resources --factory-name americanexpress-adf --name $(basename $file .json) --definition @$file
-          done
+    - name: Notify Deployment
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "Deployment stage goes here. You can add deployment commands or notifications."
