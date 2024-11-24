@@ -10,36 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Check out the repository
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      # Step 1: Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    # Step 2: Set up Azure CLI
-    - name: Set up Azure CLI
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Step 2: Set up Azure CLI
+      - name: Set up Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # Step 3: Deploy or Update Azure Data Factory
-    - name: Deploy Data Factory Linked Service, Pipelines, etc.
-      run: |
-        # Login to Azure
-        az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # Step 3: Set the Azure Subscription
+      - name: Set Azure Subscription
+        run: |
+          az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
-        # Configure Git integration in Azure Data Factory
-        az datafactory configure-repo \
-          --resource-group aml-resources \
-          --factory-name americanexpress-adf \
-          --repository-type GitHub \
-          --account-name palishiita \
-          --repository-name American-Express-Default-Prediction \
-          --collaboration-branch main \
-          --root-folder /ADF \
-          --git-url https://github.com/palishiita/American-Express-Default-Prediction \
-          --last-commit-id c2986cf49e7f0ae92022f5db342d159bb7f12896
+      # Step 4: Deploy or Update Azure Data Factory
+      - name: Deploy Data Factory Linked Service, Pipelines, etc.
+        run: |
+          # Configure Git integration in Azure Data Factory
+          az datafactory configure-repo \
+            --resource-group aml-resources \
+            --factory-name americanexpress-adf \
+            --repository-type GitHub \
+            --account-name palishiita \
+            --repository-name American-Express-Default-Prediction \
+            --collaboration-branch main \
+            --root-folder /ADF \
+            --git-url https://github.com/palishiita/American-Express-Default-Prediction \
+            --last-commit-id c2986cf49e7f0ae92022f5db342d159bb7f12896
 
-        # Deploy Data Factory resources like pipelines, datasets, and linked services
-        # (Assuming you have the pipeline JSON files and other resources in your repo under /ADF)
-        for file in $(find . -type f -name "*.json" -path "./ADF/*"); do
-          az datafactory pipeline create --resource-group aml-resources --factory-name americanexpress-adf --name $(basename $file .json) --definition @$file
-        done
+          # Deploy Data Factory resources like pipelines, datasets, and linked services
+          for file in $(find . -type f -name "*.json" -path "./ADF/*"); do
+            az datafactory pipeline create --resource-group aml-resources --factory-name americanexpress-adf --name $(basename $file .json) --definition @$file
+          done
