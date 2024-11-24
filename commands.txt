@@ -9,6 +9,21 @@ az storage container list --account-name amldatalakestore --output table
 az storage blob list --account-name <your-storage-account-name> --container-name <container-name> --output table
 az storage blob list --account-name amldatalakestore --container-name default-prediction-data --output table
 
+# Creating a service principle in azure
+az ad sp create-for-rbac --name "github-sp" --role contributor --scopes /subscriptions/<subscription-id> --sdk-auth
+
+# Connecting my github with azure datafactory
+az datafactory configure-repo \
+  --resource-group aml-resources \
+  --factory-name americanexpress-adf \
+  --repository-type GitHub \
+  --account-name palishiita \
+  --repository-name American-Express-Default-Prediction \
+  --collaboration-branch main \
+  --root-folder /ADF \
+  --git-url https://github.com/palishiita/American-Express-Default-Prediction \
+  --last-commit-id c2986cf49e7f0ae92022f5db342d159bb7f12896
+
 
 # Terraform commands
 terraform init

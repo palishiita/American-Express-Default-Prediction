@@ -118,3 +118,24 @@ resource "azurerm_machine_learning_compute_instance" "aml_compute_instance" {
     type = "SystemAssigned"  # Assign a system-assigned managed identity
   }
 }
+
+# Create Azure Data Factory without GitHub integration
+resource "azurerm_data_factory" "adf" {
+  name                = "americanexpress-adf"
+  location            = data.azurerm_resource_group.aml_rg.location
+  resource_group_name = data.azurerm_resource_group.aml_rg.name
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  public_network_enabled = true
+}
+
+# Linking Azure Data Lake Storage Account as Linked Service in Data Factory
+resource "azurerm_data_factory_linked_service_azure_blob_storage" "adf_linked_adls" {
+  name                = "adls-link"
+  data_factory_id     = azurerm_data_factory.adf.id
+
+  connection_string   = data.azurerm_storage_account.aml_storage_account.primary_connection_string
+}
