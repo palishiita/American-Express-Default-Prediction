@@ -106,3 +106,15 @@ resource "azurerm_machine_learning_workspace" "aml_workspace" {
 
   public_network_access_enabled = true
 }
+
+# Create Azure Machine Learning Compute Instance
+resource "azurerm_machine_learning_compute_instance" "aml_compute_instance" {
+  name                           = "aml-compute-instance-new"
+  machine_learning_workspace_id  = azurerm_machine_learning_workspace.aml_workspace.id
+
+  virtual_machine_size           = "Standard_E4ds_v4"
+
+  identity {
+    type = "SystemAssigned"  # Assign a system-assigned managed identity
+  }
+}
