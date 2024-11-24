@@ -1,0 +1,9 @@
+{
+	"name": "americanexpress-adf",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "dbd29dd5-c13a-4d33-bfdb-808b44399ece",
+		"tenantId": "d0da435b-a7e7-4d74-a4ae-f72cf8f3b2db"
+	}
+}
