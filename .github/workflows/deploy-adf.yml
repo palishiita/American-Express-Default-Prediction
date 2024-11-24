@@ -1,4 +1,3 @@
-# Author: ishiipl@schaeffler.com
 name: CI/CD Pipeline
 
 on:
