@@ -1,4 +1,5 @@
 terraform/*
 !terraform/terraform.tf
 data/raw/amex-default-prediction.zip
+data/processed
 *.zip
